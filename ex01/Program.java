@@ -24,6 +24,7 @@ public class Program {
                 }
                 wordScanner.close();
             }
+            readerA.close();
             BufferedReader readerB = new BufferedReader(new FileReader(fileB));
             while ((currentLine = readerB.readLine()) != null) {
                 Scanner wordScanner = new Scanner(currentLine);
@@ -35,31 +36,33 @@ public class Program {
                 }
                 wordScanner.close();
             }
+            readerB.close();
 
         } catch (Exception e) {
             System.out.println(e);
         }
 
+        Collections.sort(dictionary);
+        File output = new File("dictionary.txt");
+        if (output.exists())
+            output.delete();
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(output));
+            for (int i = 0; i < dictionary.size(); i++) {
+                writer.write(dictionary.get(i), 0, dictionary.get(i).length());
+                if (i < dictionary.size() - 1)
+                    writer.write(", ", 0, 2);
+                else
+                    writer.newLine();
+            }
+            writer.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
-        Collections.sort(dictionary, Collections.reverseOrder());
         Vector<Integer> vectorA = new Vector<Integer>(dictionary.size());
         Vector<Integer> vectorB = new Vector<Integer>(dictionary.size());
-        /*
-        for (int i = 0; i < textA.size(); i++) {
-            for (int j = 0; j < dictionary.size(); j++) {
-                if (textA.get(i).equals(dictionary.get(j))) {
-                    vectorA.set(j, vectorA.get(j) + 1);
-                }
-            }
-        }
-        for (int i = 0; i < textB.size(); i++) {
-            for (int j = 0; j < dictionary.size(); j++) {
-                if (textB.get(i).equals(dictionary.get(j))) {
-                    vectorB.set(j, vectorB.get(j) + 1);
-                }
-            }
-        }
-        */
+
         for (int i = 0; i < dictionary.size(); i++) {
             vectorA.add(0);
             vectorB.add(0);
@@ -71,18 +74,19 @@ public class Program {
             vectorB.set(i, Collections.frequency(textB, dictionary.get(i)));
         }
 
-        for(int i = 0; i< dictionary.size(); i++) {
-            System.out.print(dictionary.get(i) + " ");
-        }
-        System.out.println();
-        for(int i = 0; i < vectorA.size(); i++) {
-            System.out.print(vectorA.get(i) + " ");
-        }
-        System.out.println();
+        double numerator = 0;
+        for (int i = 0; i < dictionary.size(); i++)
+            numerator += vectorA.get(i) * vectorB.get(i);
 
-        for(int i = 0; i < vectorB.size(); i++) {
-            System.out.print(vectorB.get(i) + " ");
+        double denominator = 0;
+        double denom1 = 0;
+        double denom2 = 0;
+        for (int i = 0; i < dictionary.size(); i++) {
+            denom1 += vectorA.get(i) * vectorA.get(i);
+            denom2 += vectorB.get(i) * vectorB.get(i);
         }
-        System.out.println();
+        denominator = Math.sqrt(denom1) * Math.sqrt(denom2);
+        double similarity = numerator / denominator;
+        System.out.println("Similarity = " + (double)((int)(similarity * 100)) / 100 );
     }
 }
