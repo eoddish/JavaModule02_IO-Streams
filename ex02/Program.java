@@ -13,6 +13,10 @@ public class Program {
 
         String start = args[0].substring(len, args[0].length());
         Path path = Paths.get(start);
+        if (!path.toFile().isDirectory()) {
+            System.out.println("Error: Path is not a directory!");
+            System.exit(-1);
+        }
 
         System.setProperty("user.dir",path.toString());
         System.out.println(start.toString());
